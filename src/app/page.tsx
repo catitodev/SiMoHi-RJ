@@ -31,7 +31,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Header } from '@/components/simohi/Header';
 import { Footer } from '@/components/simohi/Footer';
-import { HydroMap } from '@/components/simohi/HydroMap';
+import dynamic from 'next/dynamic';
+
+const HydroMap = dynamic(
+  () => import('@/components/simohi/HydroMap').then(mod => mod.HydroMap),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full flex items-center justify-center bg-slate-900 rounded-lg">
+        <div className="text-center">
+          <div className="animate-pulse text-cyan-400 mb-2">Carregando mapa...</div>
+          <p className="text-xs text-slate-500">Iniciando sistema de monitoramento</p>
+        </div>
+      </div>
+    )
+  }
+);
+
 import { ThinkingLogPanel } from '@/components/simohi/ThinkingLogPanel';
 import { useMonitoramentoStore, useThinkingLogStore, useUsuarioStore } from '@/store/simohi-store';
 import { MACRORREGIOES, SUB_BACIAS, MENSAGENS_ALERTA } from '@/lib/constants';
