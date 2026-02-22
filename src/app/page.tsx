@@ -32,6 +32,7 @@ import { Separator } from "@/components/ui/separator";
 import { Header } from "@/components/simohi/Header";
 import { Footer } from "@/components/simohi/Footer";
 import dynamic from "next/dynamic";
+import { identificarLocalizacao } from '@/lib/topographer';
 
 const HydroMap = dynamic(
   () => import("@/components/simohi/HydroMap").then((mod) => mod.HydroMap),
@@ -130,17 +131,23 @@ export default function SimohiDashboard() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocalizacao(position.coords.latitude, position.coords.longitude);
-          addLog({
-            etapa: "CONCLUSAO",
-            mensagem: `Geofencing ativo: ${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`,
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setLocalizacao(lat, lng);
+
+          const localHidro = identificarLocalizacao(lat, lng);
+          const { adicionarFavorito } = useUsuarioStore.getState();
+
+          adicionarFavorito({ id: 'hiperlocal', nome: '📍 Minha Localização', latitude: lat, longitude: lng, subBaciaId: localHidro.subBacia.id });
+          adicionarFavorito({ id: 'sub-bacia', nome: `🌊 ${localHidro.subBacia.nome}`, latitude: lat, longitude: lng, subBaciaId: localHidro.subBacia.id });
+          adicionarFavorito({ id: 'mra', nome: `🗺️ ${localHidro.mra.nome}`, latitude: lat, longitude: lng, subBaciaId: localHidro.subBacia.id });
+
+          addLog({ 
+            etapa: 'CONCLUSAO', 
+            mensagem: `Topographer: ${localHidro.subBacia.nome} → ${localHidro.mra.codigo}` 
           });
         },
-        () =>
-          addLog({
-            etapa: "ANALISE",
-            mensagem: "GPS indisponível - usando localização padrão",
-          }),
+        () => addLog({ etapa: 'ANALISE', mensagem: 'GPS indisponível - usando localização padrão' })
       );
     }
   }, [addLog, setLocalizacao]);
