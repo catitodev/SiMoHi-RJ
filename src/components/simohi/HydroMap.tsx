@@ -503,17 +503,7 @@ export function HydroMap({
     }
   }, [onMRASelect, onSubBaciaSelect]);
 
-  // Loading state
-  if (!isClient || !mapLoaded) {
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-slate-900 rounded-lg">
-        <div className="text-center">
-          <div className="animate-pulse text-cyan-400 mb-2">Carregando mapa...</div>
-          <p className="text-xs text-slate-500">Iniciando Leaflet com CartoDB DarkMatter</p>
-        </div>
-      </div>
-    );
-  }
+  // Loading state removido — mapRef precisa estar sempre no DOM
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-lg bg-slate-900">
@@ -525,6 +515,14 @@ export function HydroMap({
         className="absolute inset-0 h-full w-full"
         style={{ height: '100%', width: '100%' }}
       />
+      {(!isClient || !mapLoaded) && (
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="text-center">
+            <div className="animate-pulse text-cyan-400 mb-2">Carregando mapa...</div>
+            <p className="text-xs text-slate-500">Iniciando Leaflet com CartoDB DarkMatter</p>
+          </div>
+        </div>
+      )}
 
       {/* ============================================ */}
       {/* CONTROLES DO MAPA */}
