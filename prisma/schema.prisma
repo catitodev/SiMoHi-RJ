@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -14,96 +14,96 @@ datasource db {
 // MACRORREGIÕES AMBIENTAIS (MRA) - 7 regiões
 // ============================================
 model MacrorregiaoAmbiental {
-  id          String   @id @default(cuid())
-  codigo      String   @unique // MRA-1 a MRA-7
+  id          String  @id @default(cuid())
+  codigo      String  @unique // MRA-1 a MRA-7
   nome        String
   descricao   String?
   areaKm2     Float?
   coordenadas String? // GeoJSON simplificado
-  
-  subBacias   SubBaciaHidrografica[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  subBacias SubBaciaHidrografica[]
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
 }
 
 // ============================================
 // SUB-BACIAS HIDROGRÁFICAS - 30 sub-bacias
 // ============================================
 model SubBaciaHidrografica {
-  id                String   @id @default(cuid())
-  codigo            String   @unique // Código oficial
+  id                String  @id @default(cuid())
+  codigo            String  @unique // Código oficial
   nome              String
   areaKm2           Float?
   coordenadas       String? // GeoJSON
   macrorregiaoId    String
   rioPrincipal      String?
   populacaoEstimada Int?
-  nivelRiscoMedio   String?  // BAIXO, MODERADO, ALTO, CRITICO
-  
-  macrorregiao      MacrorregiaoAmbiental @relation(fields: [macrorregiaoId], references: [id])
-  estacoes          EstacaoMonitoramento[]
-  alertas           Alerta[]
-  favoritos         LocalidadeFavorita[]
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  nivelRiscoMedio   String? // BAIXO, MODERADO, ALTO, CRITICO
+
+  macrorregiao MacrorregiaoAmbiental  @relation(fields: [macrorregiaoId], references: [id])
+  estacoes     EstacaoMonitoramento[]
+  alertas      Alerta[]
+  favoritos    LocalidadeFavorita[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
 }
 
 // ============================================
 // ESTAÇÕES DE MONITORAMENTO
 // ============================================
 model EstacaoMonitoramento {
-  id              String   @id @default(cuid())
-  codigo          String   @unique // Código oficial da estação
-  nome            String
-  tipo            String   // PLUVIOMETRICO, FLUVIOMETRICO, METEOROLOGICO, RADAR
-  fonte           String   // INMET, CEMADEN, INEA, ALERTA_RIO, CPTEC
-  latitude        Float
-  longitude       Float
-  altitude        Float?
-  subBaciaId      String
-  ativa           Boolean  @default(true)
-  ultimaLeitura   DateTime?
-  
-  subBacia        SubBaciaHidrografica @relation(fields: [subBaciaId], references: [id])
-  leituras        LeituraSensor[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String    @id @default(cuid())
+  codigo        String    @unique // Código oficial da estação
+  nome          String
+  tipo          String // PLUVIOMETRICO, FLUVIOMETRICO, METEOROLOGICO, RADAR
+  fonte         String // INMET, CEMADEN, INEA, ALERTA_RIO, CPTEC
+  latitude      Float
+  longitude     Float
+  altitude      Float?
+  subBaciaId    String
+  ativa         Boolean   @default(true)
+  ultimaLeitura DateTime?
+
+  subBacia  SubBaciaHidrografica @relation(fields: [subBaciaId], references: [id])
+  leituras  LeituraSensor[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
 }
 
 // ============================================
 // LEITURAS DE SENSORES
 // ============================================
 model LeituraSensor {
-  id              String   @id @default(cuid())
-  estacaoId       String
-  timestamp       DateTime
-  
+  id        String   @id @default(cuid())
+  estacaoId String
+  timestamp DateTime
+
   // Dados pluviométricos
-  chuvaAtual      Float?   // mm
-  chuvaAcumulada1h Float?
+  chuvaAtual        Float? // mm
+  chuvaAcumulada1h  Float?
   chuvaAcumulada24h Float?
-  
+
   // Dados fluviométricos
-  nivelRio        Float?   // metros
-  vazao           Float?   // m³/s
-  
+  nivelRio Float? // metros
+  vazao    Float? // m³/s
+
   // Dados meteorológicos
-  temperatura     Float?   // °C
-  umidade         Float?   // %
-  pressao         Float?   // hPa
-  ventoVelocidade Float?   // km/h
-  ventoDirecao    Float?   // graus
-  
+  temperatura     Float? // °C
+  umidade         Float? // %
+  pressao         Float? // hPa
+  ventoVelocidade Float? // km/h
+  ventoDirecao    Float? // graus
+
   // Dados de radar
-  reflectividade  Float?   // dBZ
-  estimativaChuva Float?   // mm/h
-  
-  fonte           String   // API de origem
-  raw             String?  // Dados brutos JSON
-  
-  estacao         EstacaoMonitoramento @relation(fields: [estacaoId], references: [id])
-  createdAt       DateTime @default(now())
-  
+  reflectividade  Float? // dBZ
+  estimativaChuva Float? // mm/h
+
+  fonte String // API de origem
+  raw   String? // Dados brutos JSON
+
+  estacao   EstacaoMonitoramento @relation(fields: [estacaoId], references: [id])
+  createdAt DateTime             @default(now())
+
   @@index([estacaoId, timestamp])
   @@index([timestamp])
 }
@@ -112,34 +112,34 @@ model LeituraSensor {
 // ALERTAS HIDROLÓGICOS
 // ============================================
 model Alerta {
-  id                String   @id @default(cuid())
-  subBaciaId        String
-  tipo              String   // ENCHENTE, ALAGAMENTO, DESLIZAMENTO, SECA
-  nivel             String   // ATENCAO, ALERTA, ALERTA_MAXIMO
-  titulo            String
-  descricao         String
-  recomendacoes     String
-  
+  id            String @id @default(cuid())
+  subBaciaId    String
+  tipo          String // ENCHENTE, ALAGAMENTO, DESLIZAMENTO, SECA
+  nivel         String // ATENCAO, ALERTA, ALERTA_MAXIMO
+  titulo        String
+  descricao     String
+  recomendacoes String
+
   // Motor de Veracidade
-  scoreConfianca    Int      // 0-100%
-  dadosRadar        Boolean  @default(false)
-  dadosSensores     Boolean  @default(false)
-  convergencia      Boolean  @default(false)
-  
+  scoreConfianca Int // 0-100%
+  dadosRadar     Boolean @default(false)
+  dadosSensores  Boolean @default(false)
+  convergencia   Boolean @default(false)
+
   // Fontes confirmadas
-  fontesConfirmadas String?  // JSON array
-  
+  fontesConfirmadas String? // JSON array
+
   // Status
-  ativo             Boolean  @default(true)
-  inicio            DateTime @default(now())
-  fim               DateTime?
-  
-  subBacia          SubBaciaHidrografica @relation(fields: [subBaciaId], references: [id])
-  logs              LogRaciocinio[]
-  notificacoes      Notificacao[]
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
+  ativo  Boolean   @default(true)
+  inicio DateTime  @default(now())
+  fim    DateTime?
+
+  subBacia     SubBaciaHidrografica @relation(fields: [subBaciaId], references: [id])
+  logs         LogRaciocinio[]
+  notificacoes Notificacao[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
   @@index([subBaciaId, ativo])
   @@index([ativo, nivel])
 }
@@ -148,17 +148,17 @@ model Alerta {
 // LOG DE RACIOCÍNIO DA IA (Live Thinking Log)
 // ============================================
 model LogRaciocinio {
-  id          String   @id @default(cuid())
-  alertaId    String?
-  subBaciaId  String?
-  timestamp   DateTime @default(now())
-  etapa       String   // ANALISE, VERIFICACAO, CONVERGENCIA, CONCLUSAO
-  mensagem    String
-  dados       String?  // JSON com dados relevantes
-  
-  alerta      Alerta?  @relation(fields: [alertaId], references: [id])
-  createdAt   DateTime @default(now())
-  
+  id         String   @id @default(cuid())
+  alertaId   String?
+  subBaciaId String?
+  timestamp  DateTime @default(now())
+  etapa      String // ANALISE, VERIFICACAO, CONVERGENCIA, CONCLUSAO
+  mensagem   String
+  dados      String? // JSON com dados relevantes
+
+  alerta    Alerta?  @relation(fields: [alertaId], references: [id])
+  createdAt DateTime @default(now())
+
   @@index([timestamp])
 }
 
@@ -166,46 +166,46 @@ model LogRaciocinio {
 // USUÁRIOS
 // ============================================
 model Usuario {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  nome          String
-  telefone      String?
-  role          String   @default("CIDADAO") // CIDADAO, OPERADOR, ADMIN
-  
+  id       String  @id @default(cuid())
+  email    String  @unique
+  nome     String
+  telefone String?
+  role     String  @default("CIDADAO") // CIDADAO, OPERADOR, ADMIN
+
   // Modo Cidadão
   latitude      Float?
   longitude     Float?
   subBaciaAtual String?
-  
+
   // Preferências
   notificacoesAtivas Boolean @default(true)
   nivelNotificacao   String  @default("HIPERLOCAL") // HIPERLOCAL, LOCAL, BIORREGIONAL
-  
-  favoritos       LocalidadeFavorita[]
-  notificacoes    Notificacao[]
-  configuracoes   ConfiguracaoUsuario?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  favoritos     LocalidadeFavorita[]
+  notificacoes  Notificacao[]
+  configuracoes ConfiguracaoUsuario?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 }
 
 // ============================================
 // LOCALIDADES FAVORITAS
 // ============================================
 model LocalidadeFavorita {
-  id          String   @id @default(cuid())
-  usuarioId   String
-  subBaciaId  String
-  nome        String   // Casa, Trabalho, Parentes, etc.
-  latitude    Float
-  longitude   Float
-  endereco    String?
-  principal   Boolean  @default(false)
-  
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
-  subBacia    SubBaciaHidrografica @relation(fields: [subBaciaId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id         String  @id @default(cuid())
+  usuarioId  String
+  subBaciaId String
+  nome       String // Casa, Trabalho, Parentes, etc.
+  latitude   Float
+  longitude  Float
+  endereco   String?
+  principal  Boolean @default(false)
+
+  usuario   Usuario              @relation(fields: [usuarioId], references: [id])
+  subBacia  SubBaciaHidrografica @relation(fields: [subBaciaId], references: [id])
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
   @@index([usuarioId])
 }
 
@@ -213,19 +213,19 @@ model LocalidadeFavorita {
 // NOTIFICAÇÕES
 // ============================================
 model Notificacao {
-  id          String   @id @default(cuid())
-  usuarioId   String
-  alertaId    String?
-  titulo      String
-  mensagem    String
-  tipo        String   // HIPERLOCAL, LOCAL, BIORREGIONAL
-  lida        Boolean  @default(false)
-  enviada     Boolean  @default(false)
-  
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
-  alerta      Alerta?  @relation(fields: [alertaId], references: [id])
-  createdAt   DateTime @default(now())
-  
+  id        String  @id @default(cuid())
+  usuarioId String
+  alertaId  String?
+  titulo    String
+  mensagem  String
+  tipo      String // HIPERLOCAL, LOCAL, BIORREGIONAL
+  lida      Boolean @default(false)
+  enviada   Boolean @default(false)
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  alerta    Alerta?  @relation(fields: [alertaId], references: [id])
+  createdAt DateTime @default(now())
+
   @@index([usuarioId, lida])
 }
 
@@ -233,45 +233,45 @@ model Notificacao {
 // CONFIGURAÇÕES DO USUÁRIO
 // ============================================
 model ConfiguracaoUsuario {
-  id                String   @id @default(cuid())
-  usuarioId         String   @unique
-  tema              String   @default("DARK")
-  animacoesAtivas   Boolean  @default(true)
-  somNotificacoes   Boolean  @default(true)
-  vibração          Boolean  @default(true)
-  raioNotificacao   Int      @default(5) // km
-  
-  usuario           Usuario  @relation(fields: [usuarioId], references: [id])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id              String  @id @default(cuid())
+  usuarioId       String  @unique
+  tema            String  @default("DARK")
+  animacoesAtivas Boolean @default(true)
+  somNotificacoes Boolean @default(true)
+  vibração      Boolean @default(true)
+  raioNotificacao Int     @default(5) // km
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ============================================
 // STATUS DAS APIS (Painel Admin)
 // ============================================
 model StatusApi {
-  id              String   @id @default(cuid())
-  fonte           String   @unique // INMET, CEMADEN, INEA, ALERTA_RIO, CPTEC
-  status          String   @default("OPERACIONAL") // OPERACIONAL, DEGRADADO, OFFLINE
-  ultimaConsulta  DateTime?
-  tempoResposta   Int?     // ms
-  erros24h        Int      @default(0)
-  requisicoes24h  Int      @default(0)
-  mensagem        String?
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String    @id @default(cuid())
+  fonte          String    @unique // INMET, CEMADEN, INEA, ALERTA_RIO, CPTEC
+  status         String    @default("OPERACIONAL") // OPERACIONAL, DEGRADADO, OFFLINE
+  ultimaConsulta DateTime?
+  tempoResposta  Int? // ms
+  erros24h       Int       @default(0)
+  requisicoes24h Int       @default(0)
+  mensagem       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ============================================
 // DADOS SEED PARA AS MACRORREGIÕES
 // ============================================
 model DadoSeed {
-  id          String   @id @default(cuid())
-  tipo        String   // MRA, SUB_BACIA, ESTACAO
-  codigo      String
-  nome        String
-  dados       String   // JSON completo
-  importado   Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  tipo      String // MRA, SUB_BACIA, ESTACAO
+  codigo    String
+  nome      String
+  dados     String // JSON completo
+  importado Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
