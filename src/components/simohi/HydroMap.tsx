@@ -241,7 +241,10 @@ export function HydroMap({
     subBaciaLayerRef.current = subBaciaLayer;
     sensorLayerRef.current = sensorLayer;
 
-    setMapLoaded(true);
+     setTimeout(() => {
+       map.invalidateSize();
+       setMapLoaded(true);
+     }, 100);
 
     return () => {
       map.remove();
