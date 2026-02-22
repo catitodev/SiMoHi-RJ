@@ -191,6 +191,14 @@ export function HydroMap({
   // Inicializar mapa quando Leaflet carregar
   useEffect(() => {
     if (!isClient || !L || !mapRef.current || leafletMapRef.current) return;
+    
+    console.log('🗺️ Iniciando mapa...', {
+      isClient,
+      hasL: !!L,
+      hasRef: !!mapRef.current,
+      clientHeight: mapRef.current?.clientHeight,
+      clientWidth: mapRef.current?.clientWidth,
+    });
 
     // CSS do Leaflet
     const link = document.createElement('link');
@@ -242,6 +250,7 @@ export function HydroMap({
     sensorLayerRef.current = sensorLayer;
 
      setTimeout(() => {
+       console.log('✅ Mapa carregado!');
        map.invalidateSize();
        setMapLoaded(true);
      }, 100);
