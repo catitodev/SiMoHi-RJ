@@ -471,11 +471,23 @@ function MiniStat({ icon: Icon, label, value }: { icon: React.ElementType; label
 }
 
 function AlertsPanel() {
-  const alertas = [
-    { nivel: 'CRITICO', titulo: 'Rio Iguaçu', msg: 'Enchente iminente', score: 94 },
-    { nivel: 'ALTO', titulo: 'Rio Macacu', msg: 'Nível elevado', score: 78 },
-    { nivel: 'MODERADO', titulo: 'Rio Macaé', msg: 'Monitorar', score: 65 },
-  ];
+  const alertas = useMonitoramentoStore((state) => state.alertasAtivos);
+
+  if (alertas.length === 0) {
+    return (
+      <Card className="glass-card">
+        <CardHeader className="pb-2 pt-3 px-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-slate-400" />
+            Alertas Ativos
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-3 pb-3">
+          <p className="text-xs text-slate-400 text-center py-4">Nenhum alerta ativo no momento.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const cores: Record<string, string> = {
     CRITICO: 'border-red-500/50 bg-red-500/10',
