@@ -1,6 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import 'leaflet/dist/leaflet.css';
+.leaflet-container {
+  background: #0f172a !important;
+}
+
+.leaflet-tile-pane {
+  opacity: 1 !important;
+}
+
+.leaflet-overlay-pane {
+  mix-blend-mode: normal !important;
+}
 
 @custom-variant dark (&:is(.dark *));
 
