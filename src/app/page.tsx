@@ -64,7 +64,14 @@ export default function SimohiDashboard() {
   const [thinkingPanelOpen, setThinkingPanelOpen] = useState(true);
   const [selectedMRA, setSelectedMRA] = useState<MacrorregiaoAmbiental | null>(null);
   const [selectedSubBacia, setSelectedSubBacia] = useState<SubBaciaHidrografica | null>(null);
-  
+  const [dadosMeteo, setDadosMeteo] = useState<{
+    temperatura: number;
+    sensacaoTermica: number;
+    chuva: number;
+    vento: number;
+    umidade: number;
+  } | null>(null);
+
   // Stores
   const { modoCidadao, toggleModoCidadao, alertasAtivos } = useMonitoramentoStore();
   const { addLog, setProcessando } = useThinkingLogStore();
@@ -109,6 +116,18 @@ export default function SimohiDashboard() {
     }
   }, [modoCidadao, addLog, setLocalizacao]);
 
+// Busca dados reais do Open-Meteo
+useEffect(() => {
+  const lat = latitude || -22.9068;
+  const lng = longitude || -43.1729;
+  fetch(`/api/open-meteo?lat=${lat}&lng=${lng}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.sucesso) setDadosMeteo(data.dados);
+    })
+    .catch(() => null);
+}, [latitude, longitude]);
+
   // Loading Screen
   if (isLoading) {
     return <LoadingScreen />;
@@ -127,23 +146,23 @@ export default function SimohiDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             <StatusCard 
               icon={Droplets} 
-              label="Nível Médio" 
-              value="2.1m" 
-              trend="+0.3m"
-              status="elevado"
+              label="Umidade" 
+              value={dadosMeteo ? `${dadosMeteo.umidade}%` : '--'}
+              trend="Open-Meteo"
+              status={dadosMeteo && dadosMeteo.umidade > 80 ? 'elevado' : 'normal'}
             />
             <StatusCard 
               icon={CloudRain} 
-              label="Chuva 24h" 
-              value="23mm" 
-              trend="+8mm"
-              status="moderado"
+              label="Chuva Atual" 
+              value={dadosMeteo ? `${dadosMeteo.chuva}mm` : '--'}
+              trend="Open-Meteo"
+              status={dadosMeteo && dadosMeteo.chuva > 10 ? 'critico' : dadosMeteo && dadosMeteo.chuva > 5 ? 'moderado' : 'normal'}
             />
             <StatusCard 
               icon={Thermometer} 
               label="Temperatura" 
-              value="26°C" 
-              trend="-2°C"
+              value={dadosMeteo ? `${dadosMeteo.temperatura}°C` : '--'}
+              trend={dadosMeteo ? `Sensação ${dadosMeteo.sensacaoTermica || dadosMeteo.temperatura}°C` : 'carregando...'}
               status="normal"
             />
             <StatusCard 
@@ -215,8 +234,8 @@ export default function SimohiDashboard() {
 
                   {/* Mini Stats */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-                    <MiniStat icon={Droplets} label="Vazão" value="62 m³/s" />
-                    <MiniStat icon={Wind} label="Vento" value="12 km/h" />
+                    <MiniStat icon={Droplets} label="Vazão" value="Em breve" />
+                    <MiniStat icon={Wind} label="Vento" value={dadosMeteo ? `${dadosMeteo.vento} km/h` : '--'} />
                     <MiniStat icon={Database} label="Estações" value="47/52" />
                     <MiniStat icon={Shield} label="Sistemas" value="5/5 OK" />
                   </div>
