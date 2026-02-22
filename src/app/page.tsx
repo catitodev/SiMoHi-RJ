@@ -102,7 +102,7 @@ export default function SimohiDashboard() {
 
   // Geolocalização
   useEffect(() => {
-    if (modoCidadao && navigator.geolocation) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocalizacao(position.coords.latitude, position.coords.longitude);
