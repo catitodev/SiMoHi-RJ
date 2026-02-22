@@ -139,8 +139,7 @@ useEffect(() => {
       
       <main className="flex-1">
         {/* Banner de Alerta Crítico */}
-        <CriticalAlertBanner />
-
+       
         <div className="container mx-auto px-4 py-4">
           {/* Status das APIs e Info Principal */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
@@ -326,34 +325,8 @@ useEffect(() => {
 
             {/* Tab: Alertas */}
             <TabsContent value="alertas" className="space-y-4 mt-0">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <AlertDetailCard 
-                  nivel="ALERTA_MAXIMO"
-                  titulo="Enchente Iminente - Rio Iguaçu/Sarapuí"
-                  subBacia="MRA-1, Sub-bacia RJ-02"
-                  descricao="Nível crítico atingido após chuva intensa de 65mm nas últimas 6h. Convergência confirmada entre Radar Alerta Rio e Sensores INEA."
-                  score={94}
-                  fontes={['Alerta Rio', 'INEA', 'CEMADEN']}
-                  acoes={MENSAGENS_ALERTA.ALERTA_MAXIMO.acoes}
-                />
-                <AlertDetailCard 
-                  nivel="ALERTA"
-                  titulo="Risco de Alagamento - Rio Macacu"
-                  subBacia="MRA-1, Sub-bacia RJ-04"
-                  descricao="Nível elevado do rio. Chuva moderada contínua pode elevar risco."
-                  score={78}
-                  fontes={['Alerta Rio', 'INMET']}
-                  acoes={MENSAGENS_ALERTA.ALERTA.acoes}
-                />
-                <AlertDetailCard 
-                  nivel="ATENCAO"
-                  titulo="Monitoramento Intensificado - Rio Macaé"
-                  subBacia="MRA-5, Sub-bacia RJ-16"
-                  descricao="Condições de atenção. Acompanhar evolução meteorológica."
-                  score={65}
-                  fontes={['CEMADEN']}
-                  acoes={MENSAGENS_ALERTA.ATENCAO.acoes}
-                />
+              <div className="col-span-3 flex items-center justify-center h-40">
+                <p className="text-slate-400 text-sm">Nenhum alerta ativo no momento.</p>
               </div>
             </TabsContent>
 
@@ -459,49 +432,7 @@ function LoadingScreen() {
   );
 }
 
-function CriticalAlertBanner() {
-  const [show, setShow] = useState(true);
-  if (!show) return null;
 
-  return (
-    <motion.div
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: 'auto', opacity: 1 }}
-      className="bg-red-500/10 border-b border-red-500/30"
-    >
-      <div className="container mx-auto px-4 py-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.8, repeat: Infinity }}>
-            <AlertTriangle className="h-4 w-4 text-red-400" />
-          </motion.div>
-          <div>
-            <span className="text-xs sm:text-sm text-red-400 font-semibold">
-              ALERTA MÁXIMO - Rio Iguaçu/Sarapuí
-            </span>
-            <p className="text-[10px] text-red-300/70 hidden sm:block">
-              Evacuação imediata recomendada em Belford Roxo e Nova Iguaçu
-            </p>
-          </div>
-          <Badge variant="outline" className="hidden sm:flex border-red-500 text-red-400 text-[10px]">
-            Score: 94%
-          </Badge>
-          <Badge variant="outline" className="hidden md:flex border-green-500 text-green-400 text-[10px]">
-            Convergência OK
-          </Badge>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-red-400 hover:bg-red-500/10">
-            <Phone className="h-3 w-3 mr-1" />
-            193
-          </Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShow(false)}>
-            <span className="text-xs text-red-400">✕</span>
-          </Button>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 function StatusCard({ icon: Icon, label, value, trend, status }: {
   icon: React.ElementType;
