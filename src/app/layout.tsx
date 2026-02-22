@@ -29,10 +29,12 @@ export const metadata: Metadata = {
     "CEMADEN",
     "Alerta Rio",
   ],
-  authors: [{ name: "Governo do Estado do Rio de Janeiro" }],
-  icons: {
-    icon: "/logo.svg",
-  },
+  authors: [{ name: "CalangoFlux" }],
+icons: {
+  icon: "/favicon.ico",
+  shortcut: "/favicon.ico",
+  apple: "/favicon.ico",
+},
   openGraph: {
     title: "SiMoHi-RJ - Monitoramento Hidrológico",
     description: "Sistema de monitoramento hidrológico em tempo real para o Estado do Rio de Janeiro",
