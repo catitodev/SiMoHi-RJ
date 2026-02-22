@@ -238,7 +238,7 @@ model ConfiguracaoUsuario {
   tema            String  @default("DARK")
   animacoesAtivas Boolean @default(true)
   somNotificacoes Boolean @default(true)
-  vibração      Boolean @default(true)
+  vibracao        Boolean @default(true)
   raioNotificacao Int     @default(5) // km
 
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])

@@ -110,56 +110,7 @@ export const useUsuarioStore = create<UsuarioState>((set) => ({
 }));
 
 // Alertas simulados iniciais
-const ALERTAS_INICIAIS: Alerta[] = [
-  {
-    id: 'alerta-001',
-    subBaciaId: 'sb-02',
-    tipo: 'ENCHENTE',
-    nivel: 'ALERTA_MAXIMO',
-    titulo: 'Enchente Iminente - Rio Iguaçu/Sarapuí',
-    descricao: 'Nível crítico atingido. Chuva intensa de 65mm nas últimas 6h.',
-    recomendacoes: 'EVACUE IMEDIATAMENTE áreas de risco. Ligue 193.',
-    scoreConfianca: 94,
-    dadosRadar: true,
-    dadosSensores: true,
-    convergencia: true,
-    fontesConfirmadas: ['Alerta Rio', 'INEA', 'CEMADEN'],
-    ativo: true,
-    inicio: new Date(),
-  },
-  {
-    id: 'alerta-002',
-    subBaciaId: 'sb-04',
-    tipo: 'ALAGAMENTO',
-    nivel: 'ALERTA',
-    titulo: 'Risco de Alagamento - Rio Macacu',
-    descricao: 'Nível elevado do rio. Chuva moderada contínua.',
-    recomendacoes: 'Afaste-se de áreas de risco. Não cruze vias alagadas.',
-    scoreConfianca: 78,
-    dadosRadar: true,
-    dadosSensores: true,
-    convergencia: false,
-    fontesConfirmadas: ['Alerta Rio', 'INMET'],
-    ativo: true,
-    inicio: new Date(),
-  },
-  {
-    id: 'alerta-003',
-    subBaciaId: 'sb-16',
-    tipo: 'ENCHENTE',
-    nivel: 'ATENCAO',
-    titulo: 'Monitoramento Intensificado - Rio Macaé',
-    descricao: 'Condições de atenção. Acompanhar evolução.',
-    recomendacoes: 'Fique atento às informações meteorológicas.',
-    scoreConfianca: 65,
-    dadosRadar: false,
-    dadosSensores: true,
-    convergencia: false,
-    fontesConfirmadas: ['CEMADEN'],
-    ativo: true,
-    inicio: new Date(),
-  },
-];
+const ALERTAS_INICIAIS: Alerta[] = [];
 
 export const useMonitoramentoStore = create<MonitoramentoState>((set) => ({
   subBaciaSelecionada: null,

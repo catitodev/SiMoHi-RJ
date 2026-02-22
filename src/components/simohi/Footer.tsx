@@ -39,7 +39,7 @@ export function Footer() {
           <div className="flex items-center gap-4 text-[10px] text-slate-500">
             <div className="flex items-center gap-1.5">
               <Scale className="h-3 w-3" />
-              <span>Licença MIT</span>
+              <span>Licença AGPL v3.0</span>
             </div>
             <div className="flex items-center gap-1">
               <span>Desenvolvido com</span>
