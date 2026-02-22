@@ -191,64 +191,12 @@ export function HydroMap({
   // Inicializar mapa quando Leaflet carregar
   useEffect(() => {
     if (!isClient || !L || !mapRef.current || leafletMapRef.current) return;
-
-    const initMap = () => {
-      if (!mapRef.current) return;
-
+   
     // CSS do Leaflet
-    if (!document.querySelector('link[href*="leaflet"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-      document.head.appendChild(link);
-    }
-
-    const map = L.map(mapRef.current, {
-      center: RJ_CENTER,
-      zoom: RJ_DEFAULT_ZOOM,
-      minZoom: 5,
-      maxZoom: 18,
-      zoomControl: false,
-      attributionControl: false,
-      scrollWheelZoom: true,
-      doubleClickZoom: true,
-      touchZoom: true,
-    });
-
-    const tileLayer = L.tileLayer(CARTO_DARK_URL, { maxZoom: 19 }).addTo(map);
-    const mraLayer = L.layerGroup().addTo(map);
-    const subBaciaLayer = L.layerGroup().addTo(map);
-    const sensorLayer = L.layerGroup().addTo(map);
-
-    map.on('zoomend', () => setZoom(map.getZoom()));
-    map.on('click', () => {
-      setSelectedMRA(null);
-      setSelectedSubBacia(null);
-      onMRASelect?.(null);
-      onSubBaciaSelect?.(null);
-    });
-
-    leafletMapRef.current = map;
-    tileLayerRef.current = tileLayer;
-    mraLayerRef.current = mraLayer;
-    subBaciaLayerRef.current = subBaciaLayer;
-    sensorLayerRef.current = sensorLayer;
-
-    map.invalidateSize();
-    setMapLoaded(true);
-  };
-
-  // Garante que o DOM está pronto
-  const timer = setTimeout(initMap, 300);
-
-  return () => {
-    clearTimeout(timer);
-    if (leafletMapRef.current) {
-      leafletMapRef.current.remove();
-      leafletMapRef.current = null;
-    }
-  };
-}, [L, isClient, onMRASelect, onSubBaciaSelect]);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
 
     // Criar mapa
     const map = L.map(mapRef.current, {
@@ -294,10 +242,9 @@ export function HydroMap({
     sensorLayerRef.current = sensorLayer;
 
      setTimeout(() => {
-       console.log('✅ Mapa carregado!');
        map.invalidateSize();
        setMapLoaded(true);
-     }, 100);
+     }, 500);
 
     return () => {
       map.remove();
